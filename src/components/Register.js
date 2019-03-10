@@ -1,7 +1,13 @@
 import React from 'react'
+<<<<<<< HEAD
 import { Link , Redirect } from 'react-router-dom'
 import {connect} from 'react-redux'
 import {userRegister} from './../1.actions'
+=======
+import { Link,Redirect } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { userRegister } from './../1.actions'
+>>>>>>> 55a1536218c0ace0162cd66ef781f06e02614591
 import Loader from 'react-loader-spinner'
 
 class Register extends React.Component{
@@ -11,14 +17,34 @@ class Register extends React.Component{
             this.setState({error : newProps.error})
         }
     }
+<<<<<<< HEAD
 
     renderErrorMessage = () => {
         if(this.state.error !== ""){
             return <div className="alert alert-danger mt-3" role="alert">
+=======
+    renderLoadingOrBtn =() => {
+        if(this.props.loading === true){
+            return <Loader
+                    type="Audio"
+                    color="#00BFFF"
+                    height="50"	
+                    width="50"
+                    />
+        }else{
+            return <button type="button"    className="btn btn-primary" style={{width:"300px"}} onClick={this.onBtnRegisterClick} ><i className="fas fa-sign-in-alt"  /> Sign Up!</button>
+        }
+    }
+
+    renderErrorMessege = () => {
+        if(this.state.error !== ""){
+            return <div class="alert alert-danger mt-3" role="alert">
+>>>>>>> 55a1536218c0ace0162cd66ef781f06e02614591
                         {this.state.error}
                     </div>
         }
     }
+<<<<<<< HEAD
 
     onBtnRegisterClick = () => {
         var username = this.refs.username.value
@@ -45,6 +71,22 @@ class Register extends React.Component{
     render(){
         if(this.props.username !== ""){
             return <Redirect to='/'/>
+=======
+    onBtnRegisterClick = () => {
+        var username = this.refs.username.value
+        var password = this.refs.password.value
+        var email = this.refs.email.value
+        var phone = this.refs.phone.value
+        if(username === "" || password ===""||email === "" ||phone ===""){
+            this.setState({error : "Harus diisi semua"})
+        }else{
+            this.props.userRegister(username,password,email,phone)
+        }
+    }
+    render(){
+        if(this.props.user !== ""){
+           return <Redirect to='/' />
+>>>>>>> 55a1536218c0ace0162cd66ef781f06e02614591
         }
         return(
             <div className="container myBody " style={{minHeight:"600px"}}>
@@ -82,9 +124,15 @@ class Register extends React.Component{
                                 </div>
                                 
                                 <div className="form-group row">
+<<<<<<< HEAD
                                     <div className="col-12" style={{textAlign:"center"}}>
                                         {this.renderLoaderOrBtn()}
                                         {this.renderErrorMessage()}
+=======
+                                    <div className="col-12">
+                                    {this.renderLoadingOrBtn()}
+                                    {this.renderErrorMessege()}
+>>>>>>> 55a1536218c0ace0162cd66ef781f06e02614591
                                     </div>
                                         
                                 </div>
@@ -101,6 +149,7 @@ class Register extends React.Component{
 
 const mapStateToProps = (state) => {
     return {
+<<<<<<< HEAD
         username : state.user.username,
         loading : state.user.loading,
         error : state.user.error,
@@ -108,3 +157,12 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps, {userRegister})(Register)
+=======
+        user : state.user.username,
+        loading : state.user.loading,
+        error : state.user.error
+    }
+} 
+
+export default connect(mapStateToProps,{userRegister})(Register)
+>>>>>>> 55a1536218c0ace0162cd66ef781f06e02614591

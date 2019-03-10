@@ -2,7 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
+<<<<<<< HEAD
 import {createStore, applyMiddleware} from 'redux'
+=======
+import { createStore, applyMiddleware } from 'redux'
+>>>>>>> 55a1536218c0ace0162cd66ef781f06e02614591
 import ReduxThunk from 'redux-thunk'
 import Reducers from './2.reducers'
 

@@ -1,4 +1,5 @@
 import React from 'react'
+<<<<<<< HEAD
 import { Link , Redirect } from 'react-router-dom'
 import {connect} from 'react-redux'
 import {onLogin} from './../1.actions'
@@ -7,8 +8,18 @@ import cookie from 'universal-cookie'
 
 //COOKIE MENYIMPAN DATA DI BROWSER
 const Cookie = new cookie()
+=======
+import { Link ,Redirect} from 'react-router-dom'
+import { connect } from 'react-redux'
+import { onLogin } from './../1.actions'
+import Loader from 'react-loader-spinner'
+import cookie from 'universal-cookie'
+>>>>>>> 55a1536218c0ace0162cd66ef781f06e02614591
 
+// MENYIMPAN DATA DI BROWSER
+const Cookie = new cookie()
 class Login extends React.Component{
+<<<<<<< HEAD
     // KE TRIGGER KALAU ADA PERUBAHAN PROPS YAITU GLOBAL STATE
     componentWillReceiveProps(newProps){
         Cookie.set('userData',newProps.username,{path :'/'})
@@ -34,12 +45,47 @@ class Login extends React.Component{
     renderErrorMessage = () => {
         if(this.props.error !== ""){
             return <div className="alert alert-danger mt-3" role="alert">
+=======
+        
+    // KE TRIGER KALAU ADA PERUBAHAN PROPS YAITU GLOBAL STATE
+    componentWillReceiveProps(newProps){
+        console.log(newProps)
+        Cookie.set('userData',newProps.username,{path :'/'})
+    }
+    onBtnLoginClick = () => {
+        var username = this.refs.username.value // fikri
+        var password = this.refs.password.value // rahasia123
+        this.props.onLogin(username,password)
+    }
+
+    renderBtnOrLoading = () => {
+        if(this.props.loading === true){
+            return <Loader
+                    type="Audio"
+                    color="#00BFFF"
+                    height="50"	
+                    width="50"
+                    />
+        }else{
+            return <button type="button" className="btn btn-primary" onClick={this.onBtnLoginClick} style={{width:"300px"}} ><i className="fas fa-sign-in-alt" /> Login</button>
+        }
+        
+    }
+    renderErrorMessege = () => {
+        if(this.props.error !== ""){
+            return <div class="alert alert-danger mt-3" role="alert">
+>>>>>>> 55a1536218c0ace0162cd66ef781f06e02614591
                         {this.props.error}
                     </div>
         }
     }
+<<<<<<< HEAD
     render(){
 
+=======
+
+    render(){
+>>>>>>> 55a1536218c0ace0162cd66ef781f06e02614591
         if(this.props.username !== ""){
             return <Redirect to='/'/>
         }
@@ -65,9 +111,15 @@ class Login extends React.Component{
                             </div>
                             
                             <div className="form-group row">
+<<<<<<< HEAD
                                 <div className="col-12" style={{textAlign:"center"}}>
                                     {this.renderBtnOrLoading()}
                                     {this.renderErrorMessage()}
+=======
+                                <div className="col-12" style={{textAlign:'center'}}>
+                                    {this.renderBtnOrLoading()}
+                                    {this.renderErrorMessege()}
+>>>>>>> 55a1536218c0ace0162cd66ef781f06e02614591
                                 </div>
                                     
                             </div>
@@ -80,7 +132,16 @@ class Login extends React.Component{
         )
     }
 }
+const mapsStateToProps =(state) => {
+    return{
+        username : state.user.username,
+        loading : state.user.loading,
+        error : state.user.error,
+    }
+}
 
+
+<<<<<<< HEAD
 const mapsStatetoProps = (state) => {
     return {
         username : state.user.username,
@@ -90,3 +151,6 @@ const mapsStatetoProps = (state) => {
 }
 
 export default connect(mapsStatetoProps,{onLogin})(Login)
+=======
+export default connect(mapsStateToProps,{ onLogin })(Login)
+>>>>>>> 55a1536218c0ace0162cd66ef781f06e02614591
