@@ -1,5 +1,6 @@
 import React from 'react'
 import Carousel from './carousel'
+import {connect} from 'react-redux'
 
 
 class Home extends React.Component{
@@ -36,6 +37,7 @@ class Home extends React.Component{
                     <div className="col-lg-9">
                         <div className="my-4">
                             <Carousel />
+                            {this.props.id}
                         </div>
                     </div>
                 </div>
@@ -44,4 +46,11 @@ class Home extends React.Component{
     }
 }
 
-export default Home
+const mapStateToProps = (state) => {
+    return {
+        id : state.user.id ,
+        user : state.user
+    }
+}
+
+export default connect(mapStateToProps)(Home)
