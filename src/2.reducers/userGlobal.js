@@ -1,8 +1,8 @@
-const INITIAL_STATE = {id : 0 , username : "", error: "", loading:false}
+const INITIAL_STATE = {id : 0 , username : "", error: "", loading:false, role : ''}
 
 export default (state=INITIAL_STATE,action) => {
     if(action.type === 'LOGIN_SUCCESS'){
-        return {...INITIAL_STATE,username : action.payload}
+        return {...INITIAL_STATE, id : action.payload.id, username : action.payload.username , role : action.payload.role}
     } else if (action.type === 'LOADING') {
         return{...INITIAL_STATE , loading : true}
     } else if (action.type === 'USER_NOT_FOUND'){
@@ -19,3 +19,21 @@ export default (state=INITIAL_STATE,action) => {
     }
     
 }
+
+// switch(action.type){
+//     case 'LOGIN_SUCCESS' :
+//         return {...INITIAL_STATE,username : action.payload.username , role : action.payload.role}
+//     case 'LOADING' :
+//         return{...INITIAL_STATE , loading : true}
+//     case 'USER_NOT_FOUND' :
+//         return{...INITIAL_STATE , error : 'Username atau password salah'}
+//     case 'SERVER_ERROR' :
+//         return{...INITIAL_STATE , error : 'Server error. Try again later.'}
+//     case 'RESET_USER' :
+//         return INITIAL_STATE
+//     case 'USERNAME_NOT_AVAILABLE' :
+//         return {...INITIAL_STATE , error : 'Username not available'}
+//     default :
+//         return state
+
+// }

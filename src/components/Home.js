@@ -1,6 +1,7 @@
 import React from 'react'
 import Carousel from './carousel'
 import {connect} from 'react-redux'
+import Product from './productList'
 
 
 class Home extends React.Component{
@@ -38,10 +39,11 @@ class Home extends React.Component{
                         <div className="my-4">
                             <Carousel />
                             {this.props.id}
+                            
                         </div>
-                        {this.props.id}
                     </div>
                 </div>
+                <Product/> 
             </div>
         )
     }

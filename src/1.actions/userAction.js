@@ -5,6 +5,9 @@ import cookie from 'universal-cookie'
 const objCookie = new cookie()
 
 //LOGIN
+//export const karena yang mau diexport lebih dari satu
+//pake export default kalo yang diexport cuma satu
+
 export const onLogin = (paramUsername,paramPassword) => {
     return(dispatch) => {
         //untuk mengubah loading menjadi true
@@ -23,7 +26,10 @@ export const onLogin = (paramUsername,paramPassword) => {
                 dispatch(
                     {
                         type : 'LOGIN_SUCCESS',
-                        payload : res.data[0].username
+                        payload : 
+                        { id : res.data[0].id ,
+                         username : res.data[0].username ,
+                         role : res.data[0].role}
                     }
                 )
             }
@@ -52,7 +58,10 @@ export const keepLogin = (cookie) => {
             if(res.data.length > 0){
                 dispatch({
                     type : 'LOGIN_SUCCESS',
-                    payload : res.data[0].username
+                    payload : res.data 
+                        // {username : res.data[0].username ,
+                        //  role : res.data[0].role}
+
                 })
             }
         })
@@ -75,7 +84,7 @@ export const userRegister = (a,b,c,d) => {
         dispatch({
             type : 'LOADING'
         })
-        var newData = {username : a, password : b, email : c, phone : d}
+        var newData = {username : a, password : b, email : c, phone : d, role : "user"}
         axios.get( urlApi + '/users?username=' + newData.username)
         .then((res) => {
             if(res.data.length > 0) {
@@ -86,7 +95,8 @@ export const userRegister = (a,b,c,d) => {
                 axios.post( urlApi + '/users',newData)
                 .then((res)=> dispatch({
                     type : 'LOGIN_SUCCESS',
-                    payload : a
+                    payload : {username : res.data.username ,
+                            role : res.data.role}
                 },
                     objCookie.set('userData',a,{path : '/'}) // path '/' agar cookienya diakses di semua components
                 ))
@@ -98,6 +108,38 @@ export const userRegister = (a,b,c,d) => {
             dispatch({
                 type : 'SERVER_ERROR'
             })
+        })
+    }
+}
+
+
+export const loginWithGoogle = (email) => {
+    return(dispatch) => {
+        axios.get(urlApi + '/users?username=' + email)
+        .then((res) => {
+            if(res.data.length > 0){
+                dispatch({
+                    type : 'LOGIN_SUCCESS',
+                    payload : res.data[0]
+                },
+                    objCookie.set('userData',email,{path : '/'}))
+            } else {
+                axios.post(urlApi + '/users' , {username : email, role : "user"})
+                .then((res) => {
+                    dispatch({
+                        type : 'LOGIN_SUCCESS',
+                        payload : res.data
+                    },
+                        objCookie.set('userData',email,{path : '/'}))
+    
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+            }
+        })
+        .catch((err) => {
+            console.log(err)
         })
     }
 }

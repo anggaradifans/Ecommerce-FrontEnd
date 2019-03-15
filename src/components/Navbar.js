@@ -87,6 +87,11 @@ class HeaderKu extends Component{
                                         Menu
                                         </DropdownToggle>
                                         <DropdownMenu right>
+                                        {this.props.role === 'admin' ?
+                                        <Link to="/manage"><DropdownItem>
+                                        Manage Products
+                                        </DropdownItem></Link> : null
+                                        }
                                         <DropdownItem>
                                             Transaction History
                                         </DropdownItem>
@@ -110,7 +115,8 @@ class HeaderKu extends Component{
 
 const mapStateToProps = (state) => {
     return {
-        username : state.user.username
+        username : state.user.username,
+        role : state.user.role
     }
 }
 

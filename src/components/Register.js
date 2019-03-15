@@ -1,8 +1,10 @@
 import React from 'react'
 import { Link , Redirect } from 'react-router-dom'
 import {connect} from 'react-redux'
-import {userRegister} from './../1.actions'
+import {userRegister, loginWithGoogle} from './../1.actions'
 import Loader from 'react-loader-spinner'
+import firebase from 'firebase'
+import {provider} from './../support/google'
 
 class Register extends React.Component{
     state = {error : ''}
@@ -31,6 +33,15 @@ class Register extends React.Component{
             this.props.userRegister(username,password,email,phone)
         }
     }
+
+    loginWithGoogle = () => {
+        firebase.auth().signInWithPopup(provider)
+        .then((res) => {
+            this.props.loginWithGoogle(res.user.email)
+        })
+        .catch((err) => console.log(err))
+    }
+
     renderLoaderOrBtn = () => {
         if(this.props.loading === true){
             return <Loader type="Audio"
@@ -84,6 +95,7 @@ class Register extends React.Component{
                                 <div className="form-group row">
                                     <div className="col-12" style={{textAlign:"center"}}>
                                         {this.renderLoaderOrBtn()}
+                                        <div><button className='btn border-primary mt-3' onClick={this.loginWithGoogle} style={{width:"300px"}}>Login with Google</button></div>
                                         {this.renderErrorMessage()}
                                     </div>
                                         
@@ -107,4 +119,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, {userRegister})(Register)
+export default connect(mapStateToProps, {userRegister,loginWithGoogle})(Register)
