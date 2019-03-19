@@ -20,6 +20,8 @@ import {Button , Icon , Input} from 'semantic-ui-react'
 import { urlApi } from '../support/urlApi';
 import {connect } from 'react-redux'
 import {fnHitungCart} from './../1.actions'
+import {Link} from 'react-router-dom'
+import PageNotFound from './pageNotFound'
 
 const actionsStyles = theme => ({
   root: {
@@ -239,7 +241,7 @@ class CustomPaginationActionsTable extends React.Component {
   }
 
   renderJsx = () => {
-      var jsx = this.state.rows.slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage).map((val, index) => {
+    var jsx = this.state.rows.slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage).map((val, index) => {
           return (
                 <TableRow key={val.id}>
                  <TableCell>{index+1}</TableCell>
@@ -277,98 +279,138 @@ class CustomPaginationActionsTable extends React.Component {
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
     var {namaProduk, quantity} = this.state.editItem
     
-    return (
-    <div className = 'container'>
-      <Paper className={classes.root}>
-        <div className={classes.tableWrapper}>
-          <Table className={classes.table}>
-          <TableHead>
-              <TableRow>
-                  <TableCell style={{fontSize:'20px', fontWeight:'600'}}>NO</TableCell>
-                  <TableCell style={{fontSize:'20px', fontWeight:'600'}}>PRODUK</TableCell>
-                  <TableCell style={{fontSize:'20px', fontWeight:'600'}}>HARGA</TableCell>
-                  <TableCell style={{fontSize:'20px', fontWeight:'600'}}>DISC</TableCell>
-                  <TableCell style={{fontSize:'20px', fontWeight:'600'}}>CAT</TableCell>
-                  <TableCell style={{fontSize:'20px', fontWeight:'600'}}>IMG</TableCell>
-                  <TableCell style={{fontSize:'20px', fontWeight:'600'}}>QTY</TableCell>
-              </TableRow>
-          </TableHead>
+    if(this.props.username !== ''){
+      if(this.state.rows.length > 0){
+        return (
+          <div className = 'container'>
+            <Paper className={classes.root}>
+              <div className={classes.tableWrapper}>
+                <Table className={classes.table}>
+                <TableHead>
+                    <TableRow>
+                        <TableCell style={{fontSize:'20px', fontWeight:'600'}}>NO</TableCell>
+                        <TableCell style={{fontSize:'20px', fontWeight:'600'}}>PRODUK</TableCell>
+                        <TableCell style={{fontSize:'20px', fontWeight:'600'}}>HARGA</TableCell>
+                        <TableCell style={{fontSize:'20px', fontWeight:'600'}}>DISC</TableCell>
+                        <TableCell style={{fontSize:'20px', fontWeight:'600'}}>CAT</TableCell>
+                        <TableCell style={{fontSize:'20px', fontWeight:'600'}}>IMG</TableCell>
+                        <TableCell style={{fontSize:'20px', fontWeight:'600'}}>QTY</TableCell>
+                    </TableRow>
+                </TableHead>
+                  <TableBody>
+                    {this.renderJsx()}
+                    {emptyRows > 0 && (
+                      <TableRow style={{ height: 48 * emptyRows }}>
+                        <TableCell colSpan={6} />
+                      </TableRow>
+                    )}
+                  </TableBody>
+                  <TableFooter>
+                  <TableRow>
+                    <TableCell colSpan={4}>Total Harga : Rp. {this.getTotalHarga()}</TableCell>
+                      <TableCell colSpan={1}>
+                        <Button animated color ='teal' onClick={this.checkOut}>
+                            <Button.Content visible >Check Out </Button.Content>
+                            <Button.Content hidden>
+                                <Icon name='cart' />
+                            </Button.Content>
+                            </Button>
+                      </TableCell>
+                      <TableCell colSpan={2}>
+                        <Link to ='/products'><Button animated color ='teal'>
+                            <Button.Content visible >Continue Shopping</Button.Content>
+                            <Button.Content hidden>
+                                <Icon name='cart' />
+                            </Button.Content>
+                            </Button>
+                            </Link>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        colSpan={3}
+                        count={rows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        SelectProps={{
+                          native: true,
+                        }}
+                        onChangePage={this.handleChangePage}
+                        onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                        ActionsComponent={TablePaginationActionsWrapped}
+                      />
+                    </TableRow>
+                  </TableFooter>
+                </Table>
+              </div>
+            </Paper>
+      
+        {/* EDIT PRODUCT */}
+      
+          {
+            this.state.isEdit === true ?
+            <Paper className='mt-3'>
+                <Table>
+                    <TableHead>
+                    <TableRow>
+                        <TableCell style={{fontSize:'20px', fontWeight:'600'}}>EDIT QUANTITY PRODUCT {namaProduk}</TableCell>
+                    </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell>
+                              <Input ref={input => this.quantityEdit = input} placeholder={quantity} className='mt-2 ml-2 mb-2'/>
+                              <Button animated color ='teal' className='mt-2 ml-2 mb-2' onClick={this.onBtnSave}>
+                              <Button.Content visible>Save Changes</Button.Content>
+                              <Button.Content hidden>
+                                  <Icon name='save' />
+                              </Button.Content>
+                              </Button>
+                              <Button animated color ='red' className='mt-2 ml-2 mb-2' onClick={this.onBtnCancel}>
+                              <Button.Content visible>Cancel</Button.Content>
+                              <Button.Content hidden>
+                                  <Icon name='cancel' />
+                              </Button.Content>
+                              </Button>
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </Paper>
+            : null
+          }
+            </div>
+          );
+      } else {
+        return (
+          <Paper className={classes.root}>
+          <div className={classes.tableWrapper}>
+            <Table className={classes.table}>
             <TableBody>
-              {this.renderJsx()}
-              <TableRow>
-              <TableCell colSpan={7}>Total Harga : Rp. {this.getTotalHarga()}</TableCell>
-                <TableCell colSpan={6}>
-                  <Button animated color ='teal' onClick={this.checkOut}>
-                      <Button.Content visible >Check Out </Button.Content>
-                      <Button.Content hidden>
-                          <Icon name='cart' />
-                      </Button.Content>
-                      </Button>
-                </TableCell>
-              </TableRow>
-              {emptyRows > 0 && (
-                <TableRow style={{ height: 48 * emptyRows }}>
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
+                  <TableCell colSpan={6}>
+                    <Link to ='/products'><Button animated color ='teal'>
+                        <Button.Content visible >Continue Shopping</Button.Content>
+                        <Button.Content hidden>
+                            <Icon name='cart' />
+                        </Button.Content>
+                        </Button>
+                        </Link>
+                  </TableCell>
             </TableBody>
             <TableFooter>
-              <TableRow>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25]}
-                  colSpan={3}
-                  count={rows.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  SelectProps={{
-                    native: true,
-                  }}
-                  onChangePage={this.handleChangePage}
-                  onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                  ActionsComponent={TablePaginationActionsWrapped}
-                />
-              </TableRow>
+            <TableCell style={{fontSize:'20px', fontWeight:'600'}}>Cart Anda Kosong</TableCell>
             </TableFooter>
-          </Table>
-        </div>
-      </Paper>
-
-  {/* EDIT PRODUCT */}
-
-    {
-      this.state.isEdit === true ?
-      <Paper className='mt-3'>
-          <Table>
-              <TableHead>
-              <TableRow>
-                  <TableCell style={{fontSize:'20px', fontWeight:'600'}}>EDIT QUANTITY PRODUCT {namaProduk}</TableCell>
-              </TableRow>
-              </TableHead>
-              <TableBody>
-                  <TableRow>
-                      <TableCell>
-                        <Input ref={input => this.quantityEdit = input} placeholder={quantity} className='mt-2 ml-2 mb-2'/>
-                        <Button animated color ='teal' className='mt-2 ml-2 mb-2' onClick={this.onBtnSave}>
-                        <Button.Content visible>Save Changes</Button.Content>
-                        <Button.Content hidden>
-                            <Icon name='save' />
-                        </Button.Content>
-                        </Button>
-                        <Button animated color ='red' className='mt-2 ml-2 mb-2' onClick={this.onBtnCancel}>
-                        <Button.Content visible>Cancel</Button.Content>
-                        <Button.Content hidden>
-                            <Icon name='cancel' />
-                        </Button.Content>
-                        </Button>
-                      </TableCell>
-                  </TableRow>
-              </TableBody>
-          </Table>
-      </Paper>
-      : null
+            </Table>
+            </div>
+            </Paper>
+        )
+      }
     }
-      </div>
-    );
+     else {
+      return <PageNotFound/>
+    }
+    
   
   }
 }

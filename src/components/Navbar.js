@@ -5,7 +5,7 @@ import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink, Un
     DropdownItem } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import {connect} from 'react-redux'
-import {resetUser} from './../1.actions'
+import {resetUser, fnHitungCart} from './../1.actions'
 import cookie from 'universal-cookie'
 
 const objCookie = new cookie()
@@ -25,9 +25,14 @@ class HeaderKu extends Component{
        });
     }
 
+    componentDidMount(){
+        this.props.fnHitungCart(this.props.cart)
+    }
+
     onBtnLogOut = () => {
         objCookie.remove('userData')
         this.props.resetUser()
+        this.props.fnHitungCart(0)
     }
 
     render(){ 
@@ -128,4 +133,4 @@ const mapStateToProps = (state) => {
 
 
 
-export default connect(mapStateToProps,{resetUser})(HeaderKu);
+export default connect(mapStateToProps,{resetUser, fnHitungCart})(HeaderKu);

@@ -29,7 +29,8 @@ export const onLogin = (paramUsername,paramPassword) => {
                         payload : 
                         { id : res.data[0].id ,
                          username : res.data[0].username ,
-                         role : res.data[0].role}
+                         role : res.data[0].role
+                        }
                     }
                 )
             }

@@ -2,7 +2,7 @@ const INITIAL_STATE = {id : 0 , username : "", error: "", loading:false, role : 
 
 export default (state=INITIAL_STATE,action) => {
     if(action.type === 'LOGIN_SUCCESS'){
-        return {...INITIAL_STATE, id : action.payload.id, username : action.payload.username , role : action.payload.role, cookie : true}
+        return {...INITIAL_STATE, id : action.payload.id, username : action.payload.username , role : action.payload.role, cart : action.payload.cart, cookie : true}
     } 
     else if (action.type === 'LOADING') {
         return{...INITIAL_STATE , loading : true, cookie : true}
@@ -11,7 +11,7 @@ export default (state=INITIAL_STATE,action) => {
     }  else if (action.type === 'SERVER_ERROR'){
         return{...INITIAL_STATE , error : 'Server error. Try again later.', cookie : true}
     } else if (action.type === 'RESET_USER'){
-        return {...INITIAL_STATE, cookie : true}
+        return {...INITIAL_STATE, cookie : true, cart : 0}
     } else if (action.type === 'USERNAME_NOT_AVAILABLE'){
         return {...INITIAL_STATE , error : 'Username not available', cookie : true}
     } else if (action.type === 'COOKIE_CHECKED'){

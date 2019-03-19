@@ -65,7 +65,6 @@ class ProductList extends React.Component{
                         this.setState({cart : this.state.cart+1})
                         this.props.fnHitungCart(this.state.cart)
                         axios.post(urlApi + '/cart', {...newData, quantity : 1})
-                        
                     .then((res) => {
                         console.log(res)
                         swal('Success', "Item added to Cart", 'success')
