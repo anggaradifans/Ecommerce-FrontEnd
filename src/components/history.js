@@ -3,6 +3,7 @@ import Axios from 'axios';
 import {connect} from 'react-redux'
 import {urlApi} from './../support/urlApi'
 import {Link} from 'react-router-dom'
+import PageNotFound from './pageNotFound'
 
 
 class History extends React.Component{
@@ -39,27 +40,32 @@ class History extends React.Component{
 
     
     render() {
-        return (
-            <div className="container">
-            <table className="table table-hover">
-                    <thead>
-                    <tr>
-                        <th scope="col">No</th>
-                        <th scope="col">Tanggal</th>
-                        <th scope="col">Waktu</th>
-                        <th scope="col">Username</th>
-                        <th scope="col">Jumlah Item</th>
-                        <th scope="col">Total Harga</th>
-                        <th scope="col">Detail Transaksi</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        {this.renderJsx()}
-                        
-                    </tbody>
-                </table>
-        </div>
-        )
+        if(this.props.username !== ''){
+            return (
+                <div className="container">
+                <table className="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">No</th>
+                            <th scope="col">Tanggal</th>
+                            <th scope="col">Waktu</th>
+                            <th scope="col">Username</th>
+                            <th scope="col">Jumlah Item</th>
+                            <th scope="col">Total Harga</th>
+                            <th scope="col">Detail Transaksi</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {this.renderJsx()}
+                            
+                        </tbody>
+                    </table>
+            </div>
+            )
+        } else {
+            return <PageNotFound/>
+        }
+        
     }
 }
 
