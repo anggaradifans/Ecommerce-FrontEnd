@@ -152,6 +152,9 @@ class CustomPaginationActionsTable extends React.Component {
   }
 
   onBtnSave = () => {
+      var username = this.props.username
+      var userId = this.props.id
+      var productId = this.state.editItem.productId
       var name = this.state.editItem.namaProduk 
       var harga = this.state.editItem.harga
       var diskon = this.state.editItem.discount
@@ -159,7 +162,7 @@ class CustomPaginationActionsTable extends React.Component {
       var image = this.state.editItem.img
       var quantity = this.quantityEdit.inputRef.value === "" ? this.state.editItem.quantity : this.quantityEdit.inputRef.value
   
-      var NewData = {namaProduk : name , harga : parseInt(harga) , discount : parseInt(diskon) , kategori , img : image , quantity : parseInt(quantity) }
+      var NewData = {username, userId, productId, namaProduk : name , harga : parseInt(harga) , discount : parseInt(diskon) , kategori , img : image , quantity : parseInt(quantity) }
       Axios.put(urlApi + '/cart/' +this.state.editItem.id,NewData)
         .then((res) => {
             this.getDataApi()
