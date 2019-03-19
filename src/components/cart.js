@@ -16,10 +16,10 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
 import Axios from 'axios';
 import swal from 'sweetalert'
-import {Button , Icon , Input, Label} from 'semantic-ui-react'
+import {Button , Icon , Input} from 'semantic-ui-react'
 import { urlApi } from '../support/urlApi';
 import {connect } from 'react-redux'
-import PageNotFound from './pageNotFound'
+import {fnHitungCart} from './../1.actions'
 
 const actionsStyles = theme => ({
   root: {
@@ -127,8 +127,11 @@ class CustomPaginationActionsTable extends React.Component {
   }
 
   getDataApi = () => {
-      Axios.get(urlApi + '/products')
-      .then((res) => this.setState({rows : res.data}) )
+      Axios.get(urlApi + '/cart?userId=' + this.props.id)
+      .then((res) => { console.log(res)
+          this.setState({rows : res.data})
+          this.props.fnHitungCart(res.data.length)
+        })
       .catch((err) => console.log(err))
   }
 
@@ -140,43 +143,22 @@ class CustomPaginationActionsTable extends React.Component {
     this.setState({ page: 0, rowsPerPage: event.target.value });
   };
 
-  onBtnAdd = () => {
-      var name = this.nama.inputRef.value
-      var harga = this.harga.inputRef.value
-      var diskon = this.discount.inputRef.value
-      var kategori = this.category.inputRef.value
-      var image = this.image.inputRef.value
-      var deskripsi = this.deskripsi.inputRef.value
-
-      var newData = {nama : name , harga : parseInt(harga) , discount : parseInt(diskon) , kategori : kategori , img : image , deskripsi : deskripsi }
-      Axios.post(urlApi+'/products', newData)
-        .then((res) => {
-        swal("Product Added", "New product has been added", "success")
-        this.getDataApi()
-        this.nama.inputRef.value=''
-        this.harga.inputRef.value=''
-        this.discount.inputRef.value=''
-        this.category.inputRef.value=''
-        this.image.inputRef.value=''
-        this.deskripsi.inputRef.value=''} 
-        )
-        .catch((err) => console.log(err))
-  }
+  
 
   onBtnEditClick = (param) => {
     this.setState({isEdit : true , editItem : param})
   }
 
   onBtnSave = () => {
-      var name = this.namaEdit.inputRef.value === "" ? this.state.editItem.nama : this.namaEdit.inputRef.value
-      var harga = this.hargaEdit.inputRef.value === "" ? this.state.editItem.harga : this.hargaEdit.inputRef.value
-      var diskon = this.discountEdit.inputRef.value === "" ? this.state.editItem.discount : this.discountEdit.inputRef.value
-      var kategori = this.categoryEdit.inputRef.value === "" ? this.state.editItem.kategori : this.categoryEdit.inputRef.value
-      var image = this.imageEdit.inputRef.value === "" ? this.state.editItem.img : this.imageEdit.inputRef.value
-      var deskripsi = this.deskripsiEdit.inputRef.value === "" ? this.state.editItem.deskripsi : this.deskripsiEdit.inputRef.value
+      var name = this.state.editItem.namaProduk 
+      var harga = this.state.editItem.harga
+      var diskon = this.state.editItem.discount
+      var kategori = this.state.editItem.kategori
+      var image = this.state.editItem.img
+      var quantity = this.quantityEdit.inputRef.value === "" ? this.state.editItem.quantity : this.quantityEdit.inputRef.value
   
-      var NewData = {nama : name , harga : parseInt(harga) , discount : parseInt(diskon) , kategori , img : image ,deskripsi }
-      Axios.put(urlApi + '/products/' +this.state.editItem.id,NewData)
+      var NewData = {namaProduk : name , harga : parseInt(harga) , discount : parseInt(diskon) , kategori , img : image , quantity : parseInt(quantity) }
+      Axios.put(urlApi + '/cart/' +this.state.editItem.id,NewData)
         .then((res) => {
             this.getDataApi()
             swal("Edit Success", "Product has been edited", "success")
@@ -191,30 +173,84 @@ class CustomPaginationActionsTable extends React.Component {
     this.setState({isEdit : false , editItem : {}})
   }
 
-  
-  
-  
   onBtnDelete = (id) => {
-      Axios.delete(urlApi + '/products/' + id)
+      Axios.delete(urlApi + '/cart/' + id)
         .then((res) => {
             this.getDataApi()
         })
         .catch((err) => console.log(err))
   }
 
+  getTotalHarga = ()=>{
+    var harga=0
+     for (var i=0;i<this.state.rows.length;i++){
+        harga += parseInt((this.state.rows[i].harga - (this.state.rows[i].harga *this.state.rows[i].discount/100))*this.state.rows[i].quantity)
+     }
+     return harga
+     
+   }
+
+  checkOut =() => {
+    Axios.get(urlApi+'/cart?userId='+this.props.id)
+      .then((res)=> {
+        if(res.data.length > 0){
+          var ArrCart= []
+          var totalHarga = 0
+          var today = new Date();
+          var dd = String(today.getDate()).padStart(2, '0');
+          var mm = String(today.getMonth() + 1).padStart(2, '0');
+          var jam = String(today.getHours()).padStart(2, '0');
+          var menit = String(today.getMinutes()).padStart(2, '0');
+          var detik = String(today.getSeconds()).padStart(2, '0');
+          var yyyy = today.getFullYear();
+          today = mm + '/' + dd + '/' + yyyy;
+          var waktu = jam + ':' + menit + ':' + detik
+          var jumlahItem = res.data.length
+          var username = this.props.username
+          var userId = this.props.id
+          var newData = {tanggal : today, waktu ,username, userId, jumlahItem}
+            for (var i = 0 ; i< this.state.rows.length; i++){
+              var quantity = res.data[i].quantity
+              var productId = res.data[i].productId
+              var namaProduk = res.data[i].namaProduk
+              var harga = res.data[i].harga - (res.data[i].harga*(res.data[i].discount/100))
+              var discount = res.data[i].discount
+              var kategori = res.data[i].kategori
+              totalHarga += res.data[i].harga - (res.data[i].harga*(res.data[i].discount/100))*res.data[i].quantity
+              var DataCart = {namaProduk, productId, quantity,harga,discount,kategori}
+              ArrCart.push(DataCart)
+              Axios.delete(urlApi+"/cart/"+this.state.rows[i].id)
+                .then((res) => {
+                  console.log(res)
+                  this.getDataApi()
+
+                })
+                .catch((err) => console.log(err))
+            } Axios.post(urlApi + '/history',{...newData,totalHarga,cart : ArrCart})
+                .then((res) => {
+                swal('Success', 'Transaksi Sukses', 'success')
+                })
+                .catch((err) => console.log(err))
+        } else {
+          swal("Cart Anda Kosong", "Coba belanja dulu", "error")
+        }
+      })
+      .catch((err)=> console.log(err))
+  }
+
   renderJsx = () => {
-      var jsx = this.state.rows.slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage).map((val) => {
+      var jsx = this.state.rows.slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage).map((val, index) => {
           return (
                 <TableRow key={val.id}>
-                 <TableCell>{val.id}</TableCell>
+                 <TableCell>{index+1}</TableCell>
                   <TableCell component="th" scope="row">
-                    {val.nama}
+                    {val.namaProduk}
                   </TableCell>
-                  <TableCell>Rp. {val.harga}</TableCell>
+                  <TableCell>Rp. {val.harga - (val.harga*(val.discount/100))}</TableCell>
                   <TableCell>{val.discount}%</TableCell>
                   <TableCell>{val.kategori}</TableCell>
                   <TableCell><img src={val.img} width='50px' alt='...'/></TableCell>
-                  <TableCell>{val.deskripsi}</TableCell>
+                  <TableCell>{val.quantity}</TableCell>
                   <TableCell>
                     <Button animated color ='teal' onClick={() => this.onBtnEditClick(val)}>
                     <Button.Content visible >Edit </Button.Content>
@@ -239,9 +275,8 @@ class CustomPaginationActionsTable extends React.Component {
     const { classes } = this.props;
     const { rows, rowsPerPage, page } = this.state;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-    var {nama, harga, discount, kategori, img, deskripsi} = this.state.editItem
+    var {namaProduk, quantity} = this.state.editItem
     
-    if(this.props.role === 'admin'){
     return (
     <div className = 'container'>
       <Paper className={classes.root}>
@@ -249,17 +284,28 @@ class CustomPaginationActionsTable extends React.Component {
           <Table className={classes.table}>
           <TableHead>
               <TableRow>
-                  <TableCell style={{fontSize:'20px', fontWeight:'600'}}>ID</TableCell>
-                  <TableCell style={{fontSize:'20px', fontWeight:'600'}}>NAMA</TableCell>
+                  <TableCell style={{fontSize:'20px', fontWeight:'600'}}>NO</TableCell>
+                  <TableCell style={{fontSize:'20px', fontWeight:'600'}}>PRODUK</TableCell>
                   <TableCell style={{fontSize:'20px', fontWeight:'600'}}>HARGA</TableCell>
                   <TableCell style={{fontSize:'20px', fontWeight:'600'}}>DISC</TableCell>
                   <TableCell style={{fontSize:'20px', fontWeight:'600'}}>CAT</TableCell>
                   <TableCell style={{fontSize:'20px', fontWeight:'600'}}>IMG</TableCell>
-                  <TableCell style={{fontSize:'20px', fontWeight:'600'}}>DESC</TableCell>
+                  <TableCell style={{fontSize:'20px', fontWeight:'600'}}>QTY</TableCell>
               </TableRow>
           </TableHead>
             <TableBody>
               {this.renderJsx()}
+              <TableRow>
+              <TableCell colSpan={7}>Total Harga : Rp. {this.getTotalHarga()}</TableCell>
+                <TableCell colSpan={6}>
+                  <Button animated color ='teal' onClick={this.checkOut}>
+                      <Button.Content visible >Check Out </Button.Content>
+                      <Button.Content hidden>
+                          <Icon name='cart' />
+                      </Button.Content>
+                      </Button>
+                </TableCell>
+              </TableRow>
               {emptyRows > 0 && (
                 <TableRow style={{ height: 48 * emptyRows }}>
                   <TableCell colSpan={6} />
@@ -287,39 +333,6 @@ class CustomPaginationActionsTable extends React.Component {
         </div>
       </Paper>
 
-      {/* ADD PRODUCT */}
-      <Paper className='mt-3'>
-          <Table>
-              <TableHead>
-              <TableRow>
-                  <TableCell style={{fontSize:'20px', fontWeight:'600'}}>ADD PRODUCT</TableCell>
-              </TableRow>
-              </TableHead>
-              <TableBody>
-                  <TableRow>
-                      <TableCell>
-                        <Input ref={input => this.nama = input} placeholder='Nama Product' className='mt-2 ml-2 mb-2'/>
-                      <Input  ref={input => this.harga = input} labelPosition='right' type='number' className='mt-2 ml-2 mb-2' placeholder='Harga Product'>
-                            <Label basic>Rp</Label>
-                            <input />
-                            <Label>.00</Label>
-                        </Input>
-                        <Input ref={input => this.discount = input} placeholder='Discount' className='mt-2 ml-2 mb-2'/>
-                        <Input ref={input => this.category = input} placeholder='Category' className='mt-2 ml-2 mb-2'/>
-                        <Input ref={input => this.image = input} placeholder='Image' className='mt-2 ml-2 mb-2'/>
-                        <Input ref={input => this.deskripsi = input} placeholder='Deskripsi' className='mt-2 ml-2 mb-2'/>
-                        <Button animated color ='teal' className='mt-2 ml-2 mb-2' onClick={this.onBtnAdd}>
-                        <Button.Content visible>Add Product</Button.Content>
-                        <Button.Content hidden>
-                            <Icon name='add' />
-                        </Button.Content>
-                        </Button>
-                      </TableCell>
-                  </TableRow>
-              </TableBody>
-          </Table>
-      </Paper>
-
   {/* EDIT PRODUCT */}
 
     {
@@ -328,22 +341,13 @@ class CustomPaginationActionsTable extends React.Component {
           <Table>
               <TableHead>
               <TableRow>
-                  <TableCell style={{fontSize:'20px', fontWeight:'600'}}>EDIT PRODUCT {nama}</TableCell>
+                  <TableCell style={{fontSize:'20px', fontWeight:'600'}}>EDIT QUANTITY PRODUCT {namaProduk}</TableCell>
               </TableRow>
               </TableHead>
               <TableBody>
                   <TableRow>
                       <TableCell>
-                        <Input ref={input => this.namaEdit = input} placeholder={nama} className='mt-2 ml-2 mb-2'/>
-                      <Input  ref={input => this.hargaEdit = input} labelPosition='right' type='number' className='mt-2 ml-2 mb-2' placeholder={harga}>
-                            <Label basic>Rp</Label>
-                            <input />
-                            <Label>.00</Label>
-                        </Input>
-                        <Input ref={input => this.discountEdit = input} placeholder={discount} className='mt-2 ml-2 mb-2'/>
-                        <Input ref={input => this.categoryEdit = input} placeholder={kategori} className='mt-2 ml-2 mb-2'/>
-                        <Input ref={input => this.imageEdit = input} placeholder={img} className='mt-2 ml-2 mb-2'/>
-                        <Input ref={input => this.deskripsiEdit = input} placeholder={deskripsi} className='mt-2 ml-2 mb-2'/>
+                        <Input ref={input => this.quantityEdit = input} placeholder={quantity} className='mt-2 ml-2 mb-2'/>
                         <Button animated color ='teal' className='mt-2 ml-2 mb-2' onClick={this.onBtnSave}>
                         <Button.Content visible>Save Changes</Button.Content>
                         <Button.Content hidden>
@@ -365,9 +369,7 @@ class CustomPaginationActionsTable extends React.Component {
     }
       </div>
     );
-  } else {
-    return <PageNotFound/>
-  }
+  
   }
 }
 
@@ -379,8 +381,9 @@ const mapStateToProps = (state) => {
   return {
     id : state.user.id,
     username : state.user.username,
-    role : state.user.role
+    role : state.user.role,
+    cart : state.cart.cart
   }
 }
 
-export default connect(mapStateToProps)(withStyles(styles)(CustomPaginationActionsTable));
+export default connect(mapStateToProps, {fnHitungCart})(withStyles(styles)(CustomPaginationActionsTable));

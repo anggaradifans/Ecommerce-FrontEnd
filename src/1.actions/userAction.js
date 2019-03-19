@@ -58,9 +58,9 @@ export const keepLogin = (cookie) => {
             if(res.data.length > 0){
                 dispatch({
                     type : 'LOGIN_SUCCESS',
-                    payload : res.data 
-                        // {username : res.data[0].username ,
-                        //  role : res.data[0].role}
+                    payload :  
+                        {username : res.data[0].username ,
+                         role : res.data[0].role, id : res.data[0].id}
 
                 })
             }
@@ -69,7 +69,11 @@ export const keepLogin = (cookie) => {
     }
 }
 
-
+export const cookieChecked = () => {
+    return {
+        type : 'COOKIE_CHECKED'
+    }
+}
 export const resetUser = () => {
     return {
         type : 'RESET_USER',
@@ -141,5 +145,12 @@ export const loginWithGoogle = (email) => {
         .catch((err) => {
             console.log(err)
         })
+    }
+}
+
+export const fnHitungCart = (cart) => {
+    return {
+        type : 'JUMLAH_CART',
+        payload : cart
     }
 }
