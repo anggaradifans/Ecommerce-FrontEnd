@@ -387,26 +387,19 @@ class CustomPaginationActionsTable extends React.Component {
           );
       } else {
         return (
-          <Paper className={classes.root}>
-          <div className={classes.tableWrapper}>
-            <Table className={classes.table}>
-            <TableBody>
-                  <TableCell colSpan={6}>
-                    <Link to ='/products'><Button animated color ='teal'>
-                        <Button.Content visible >Continue Shopping</Button.Content>
-                        <Button.Content hidden>
-                            <Icon name='cart' />
-                        </Button.Content>
-                        </Button>
-                        </Link>
-                  </TableCell>
-            </TableBody>
-            <TableFooter>
-            <TableCell style={{fontSize:'20px', fontWeight:'600'}}>Cart Anda Kosong</TableCell>
-            </TableFooter>
-            </Table>
+          <div className="container">
+            <div className="row justify-content-center">
+            <div className='col-md-3'>
+              <h2>Cart Anda Kosong</h2>
             </div>
-            </Paper>
+            <div className="row justify-content-center">
+            <div className='col-md-3'>
+            <Link to ='/products'><input type = "button" className="btn btn-outline-success" value = "Silahkan Belanja Lagi"/></Link>
+            </div>
+            
+            </div>
+            </div>
+          </div>
         )
       }
     }
